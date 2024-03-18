@@ -33,6 +33,24 @@ def decode_and_uncompress(data):
     # Преобразуем строку в JSON-объект
     return json.loads(uncompressed_str)
 
+def compress_and_encode(data):
+    # Преобразуем данные в JSON-строку
+    json_str = json.dumps(data)
+
+    # Преобразуем JSON-строку в байты с использованием кодировки UTF-8
+    utf8_bytes = json_str.encode('utf-8')
+
+    # Сжимаем данные с помощью zlib
+    compressed_data = zlib.compress(utf8_bytes)
+
+    # Добавляем 4 байта в начало сжатых данных (это может быть любые 4 байта, которые вы используете в вашем коде)
+    compressed_data_with_padding = b'\x00\x00\x00\x00' + compressed_data
+
+    # Кодируем данные в формате base64
+    base64_encoded_data = base64.b64encode(compressed_data_with_padding)
+
+    # Преобразуем данные в строку и возвращаем
+    return "vpn://" + base64_encoded_data.decode('utf-8')
 
 result = decode_and_uncompress(example_data)
 
